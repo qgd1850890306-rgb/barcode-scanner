@@ -4,19 +4,17 @@ import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.journeyapps.barcodescanner.ScanContract;
-import com.journeyapps.barcodescanner.ScanIntentResult;
-import com.journeyapps.barcodescanner.ScanOptions;
-import androidx.activity.result.ActivityResultLauncher;
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 
 public class MainActivity extends Activity {
     private TextView resultText;
-    private ActivityResultLauncher<ScanOptions> barcodeLauncher;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,27 +31,29 @@ public class MainActivity extends Activity {
         layout.addView(btn);
         layout.addView(resultText);
         setContentView(layout);
-        barcodeLauncher = registerForActivityResult(new ScanContract(), this::handleResult);
         btn.setOnClickListener(v -> {
-            ScanOptions options = new ScanOptions();
-            options.setDesiredBarcodeFormats(ScanOptions.DATA_MATRIX, ScanOptions.QR_CODE);
-            options.setPrompt("对准 DM码或二维码");
-            options.setBeepEnabled(true);
-            options.setOrientationLocked(false);
-            barcodeLauncher.launch(options);
+            IntentIntegrator integrator = new IntentIntegrator(this);
+            integrator.setDesiredBarcodeFormats(IntentIntegrator.DATA_MATRIX, IntentIntegrator.QR_CODE);
+            integrator.setPrompt("对准 DM码或二维码");
+            integrator.setBeepEnabled(true);
+            integrator.setOrientationLocked(false);
+            integrator.initiateScan();
         });
     }
 
-    private void handleResult(ScanIntentResult result) {
-        if (result.getContents() == null) {
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        IntentResult result = IntentIntegrator.parseActivityResult(requestCode, resultCode, data);
+        if (result == null || result.getContents() == null) {
             Toast.makeText(this, "取消扫描", Toast.LENGTH_SHORT).show();
         } else {
             String fmt = result.getFormatName();
-            String data = result.getContents();
-            resultText.setText("格式: " + fmt + "\n\n内容:\n" + data);
+            String content = result.getContents();
+            resultText.setText("格式: " + fmt + "\n\n内容:\n" + content);
             ClipboardManager clip = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-            clip.setPrimaryClip(ClipData.newPlainText("barcode", data));
+            clip.setPrimaryClip(ClipData.newPlainText("barcode", content));
             Toast.makeText(this, "已复制到剪贴板", Toast.LENGTH_SHORT).show();
         }
+        super.onActivityResult(requestCode, resultCode, data);
     }
 }
