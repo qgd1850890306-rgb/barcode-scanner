@@ -11,8 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.selection.SelectionContainer
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -79,12 +77,12 @@ fun BarcodeScannerApp(
                 actions = {
                     if (historyRecords.isNotEmpty()) {
                         IconButton(onClick = { showHistory = !showHistory }) {
-                            Icon(if (showHistory) Icons.Default.HistoryToggleOff else Icons.Default.History, "历史", tint = Color.White)
+                            Text(if (showHistory) "📋" else "📚", fontSize = 18.sp, color = Color.White)
                         }
                     }
                     if (scanResults.isNotEmpty()) {
                         IconButton(onClick = { viewModel.clearResults() }) {
-                            Icon(Icons.Default.Delete, "清空", tint = Color.White)
+                            Text("🗑️", fontSize = 18.sp, color = Color.White)
                         }
                     }
                 }
@@ -98,19 +96,19 @@ fun BarcodeScannerApp(
                             modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = if (showCamera) Danger else Primary),
                             enabled = hasCameraPermission) {
-                            Icon(if (showCamera) Icons.Default.VideocamOff else Icons.Default.Videocam, null, Modifier.size(18.dp))
+                            Text(if (showCamera) "📹" else "📷", fontSize = 16.sp)
                             Spacer(Modifier.width(4.dp)); Text(if (showCamera) "关闭" else "摄像头", fontSize = 13.sp)
                         }
                         if (showCamera) {
                             Button(onClick = { viewModel.toggleTorch() }, modifier = Modifier.weight(1f),
                                 colors = ButtonDefaults.buttonColors(containerColor = if (isTorchOn) Color(0xFFFF9800) else Primary)) {
-                                Icon(if (isTorchOn) Icons.Default.FlashOn else Icons.Default.FlashOff, null, Modifier.size(18.dp))
+                                Text(if (isTorchOn) "🔦" else "💡", fontSize = 16.sp)
                                 Spacer(Modifier.width(4.dp)); Text(if (isTorchOn) "关灯" else "手电", fontSize = 13.sp)
                             }
                         }
                         Button(onClick = onPickImage, modifier = Modifier.weight(1f),
                             colors = ButtonDefaults.buttonColors(containerColor = Primary)) {
-                            Icon(Icons.Default.PhotoLibrary, null, Modifier.size(18.dp))
+                            Text("🖼️", fontSize = 16.sp)
                             Spacer(Modifier.width(4.dp)); Text("相册", fontSize = 13.sp)
                         }
                     }
@@ -131,7 +129,7 @@ fun BarcodeScannerApp(
                 Card(modifier = Modifier.fillMaxWidth().height(200.dp).padding(8.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))) {
                     Box(Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                            Icon(Icons.Default.Warning, null, tint = Color(0xFFFF9800), modifier = Modifier.size(40.dp))
+                            Text("⚠️", fontSize = 30.sp)
                             Spacer(Modifier.height(8.dp)); Text("需要摄像头权限", color = Color(0xFFE65100))
                         }
                     }
@@ -188,7 +186,7 @@ fun HistoryContent(records: List<ScanRecord>, onSelect: (ScanRecord) -> Unit, on
         Column {
             Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.End) {
                 TextButton(onClick = onClearAll) {
-                    Icon(Icons.Default.DeleteSweep, "清空全部", Modifier.size(16.dp)); Spacer(Modifier.width(4.dp))
+                    Text("🗑️", fontSize = 16.sp); Spacer(Modifier.width(4.dp))
                     Text("清空全部", fontSize = 12.sp, color = Danger)
                 }
             }
@@ -226,9 +224,9 @@ fun ScanResultItem(record: ScanRecord, onClick: () -> Unit, showDelete: Boolean 
                 }
             }
             if (showDelete && onDelete != null) {
-                IconButton(onClick = onDelete, Modifier.size(28.dp)) { Icon(Icons.Default.Close, "删除", Modifier.size(16.dp), tint = Danger.copy(alpha = 0.6f)) }
+                IconButton(onClick = onDelete, Modifier.size(28.dp)) { Text("✖️", fontSize = 14.sp, color = Danger.copy(alpha = 0.6f)) }
             }
-            Icon(Icons.Default.ChevronRight, "详情", Modifier.size(20.dp), tint = TextSecondary.copy(alpha = 0.5f))
+            Text("▶️", fontSize = 14.sp, color = TextSecondary.copy(alpha = 0.5f))
         }
     }
 }
@@ -254,10 +252,10 @@ fun ResultDetailDialog(record: ScanRecord, onDismiss: () -> Unit, onCopy: () -> 
             if (record.isUrl) { Spacer(Modifier.height(8.dp)); Surface(shape = RoundedCornerShape(4.dp), color = Color(0xFFE3F2FD)) { Text("🔗 这是一个链接", Modifier.padding(8.dp), fontSize = 12.sp, color = Color(0xFF1565C0)) } }
         }},
         confirmButton = { Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceEvenly) {
-            TextButton(onClick = onCopy) { Icon(Icons.Default.ContentCopy, "复制", Modifier.size(16.dp)); Spacer(Modifier.width(4.dp)); Text("复制") }
-            if (record.isUrl) TextButton(onClick = onOpenUrl) { Icon(Icons.Default.OpenInBrowser, "打开", Modifier.size(16.dp)); Spacer(Modifier.width(4.dp)); Text("打开") }
-            TextButton(onClick = onShare) { Icon(Icons.Default.Share, "分享", Modifier.size(16.dp)); Spacer(Modifier.width(4.dp)); Text("分享") }
-            TextButton(onClick = onDelete, colors = ButtonDefaults.textButtonColors(contentColor = Danger)) { Icon(Icons.Default.Delete, "删除", Modifier.size(16.dp)); Spacer(Modifier.width(4.dp)); Text("删除") }
+            TextButton(onClick = onCopy) { Text("📋", fontSize = 14.sp); Spacer(Modifier.width(4.dp)); Text("复制") }
+            if (record.isUrl) TextButton(onClick = onOpenUrl) { Text("🔗", fontSize = 14.sp); Spacer(Modifier.width(4.dp)); Text("打开") }
+            TextButton(onClick = onShare) { Text("📤", fontSize = 14.sp); Spacer(Modifier.width(4.dp)); Text("分享") }
+            TextButton(onClick = onDelete, colors = ButtonDefaults.textButtonColors(contentColor = Danger)) { Text("🗑️", fontSize = 14.sp); Spacer(Modifier.width(4.dp)); Text("删除") }
         }},
         dismissButton = { TextButton(onClick = onDismiss) { Text("关闭") } }
     )
