@@ -105,7 +105,6 @@ class ScannerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     private fun processImage(imageProxy: ImageProxy) {
-        @androidx.camera.core.ExperimentalGetImage annotation class ExperimentalGetImage
         val mediaImage = imageProxy.image
         if (mediaImage != null) {
             val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
@@ -119,26 +118,24 @@ class ScannerViewModel(application: Application) : AndroidViewModel(application)
     }
 
     fun scanImageFile(context: Context, uri: Uri) {
-        viewModelScope.launch {
-            statusText.value = "正在扫码..."
-            try {
-                val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
-                val bitmap = BitmapFactory.decodeStream(inputStream); inputStream?.close()
-                if (bitmap != null) {
-                    val inputImage = InputImage.fromBitmap(bitmap, 0)
-                    val results = withContext(Dispatchers.IO) { barcodeScanner?.process(inputImage)?.await() }
-                    if (results != null) {
-                        for (barcode in results) {
+        statusText.value = "正在扫码..."
+        try {
+            val inputStream: InputStream? = context.contentResolver.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream); inputStream?.close()
+            if (bitmap != null) {
+                val inputImage = InputImage.fromBitmap(bitmap, 0)
+                barcodeScanner?.process(inputImage)
+                    ?.addOnSuccessListener { barcodes ->
+                        for (barcode in barcodes) {
                             val rawValue = barcode.rawValue ?: continue
-                            val format = formatName(barcode.format)
-                            addResult(rawValue, format)
+                            addResult(rawValue, formatName(barcode.format))
                         }
+                        if (barcodes.isEmpty()) statusFormat.value = "未识别到条码"
                     }
-                    if (results.isNullOrEmpty()) statusFormat.value = "未识别到条码"
-                }
-            } catch (e: Exception) { statusFormat.value = "扫码失败: ${e.message?.take(50)}" }
-            statusText.value = "就绪"
-        }
+                    ?.addOnFailureListener { statusFormat.value = "扫码失败: ${it.message?.take(50)}" }
+            }
+        } catch (e: Exception) { statusFormat.value = "扫码失败: ${e.message?.take(50)}" }
+        statusText.value = "就绪"
     }
 
     private fun addResult(data: String, format: String) {
