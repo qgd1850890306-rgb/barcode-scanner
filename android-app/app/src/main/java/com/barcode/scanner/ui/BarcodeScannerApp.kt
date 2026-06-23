@@ -41,6 +41,7 @@ fun BarcodeScannerApp(
 ) {
     val context = LocalContext.current
     val lifecycleOwner = context as androidx.activity.ComponentActivity
+    val hasCameraPermission = ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
     val scanResults by viewModel.scanResults.collectAsState()
     val historyRecords by viewModel.historyRecords.collectAsState()
     val isScanning by viewModel.isScanning.collectAsState()
@@ -52,9 +53,6 @@ fun BarcodeScannerApp(
     var showCamera by remember { mutableStateOf(false) }
     var showHistory by remember { mutableStateOf(false) }
 
-    val hasCameraPermission = remember {
-        ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
-    }
 
     selectedResult?.let { record ->
         ResultDetailDialog(
