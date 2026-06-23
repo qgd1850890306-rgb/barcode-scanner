@@ -27,7 +27,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.barcode.scanner.ScanRecord
 import com.barcode.scanner.ScannerViewModel
 import com.barcode.scanner.ui.theme.*
@@ -43,6 +42,7 @@ fun BarcodeScannerApp(
     onShare: (String) -> Unit
 ) {
     val context = LocalContext.current
+    val lifecycleOwner = androidx.lifecycle.ViewTreeLifecycleOwner.get(context)!!
     val scanResults by viewModel.scanResults.collectAsState()
     val historyRecords by viewModel.historyRecords.collectAsState()
     val isScanning by viewModel.isScanning.collectAsState()
@@ -122,7 +122,7 @@ fun BarcodeScannerApp(
             // 摄像头预览区
             if (showCamera && hasCameraPermission) {
                 Box(modifier = Modifier.fillMaxWidth().height(260.dp).padding(8.dp).clip(RoundedCornerShape(12.dp))) {
-                    AndroidView(factory = { ctx -> PreviewView(ctx).also { viewModel.startCamera(ctx, androidx.lifecycle.compose.LocalLifecycleOwner.current, it) } }, modifier = Modifier.fillMaxSize())
+                    AndroidView(factory = { ctx -> PreviewView(ctx).also { viewModel.startCamera(ctx, lifecycleOwner, it) } }, modifier = Modifier.fillMaxSize())
                     Box(modifier = Modifier.fillMaxSize().border(2.dp, Primary.copy(alpha = 0.5f), RoundedCornerShape(12.dp))) {
                         Box(modifier = Modifier.align(Alignment.Center).width(200.dp).height(2.dp).background(Primary.copy(alpha = 0.8f)))
                     }
