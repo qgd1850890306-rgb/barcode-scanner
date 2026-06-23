@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.selection.SelectionContainer
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import com.barcode.scanner.ScanRecord
 import com.barcode.scanner.ScannerViewModel
 import com.barcode.scanner.ui.theme.*
@@ -127,7 +129,7 @@ fun BarcodeScannerApp(
                 }
             } else if (showCamera) {
                 Card(modifier = Modifier.fillMaxWidth().height(200.dp).padding(8.dp), colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3E0))) {
-                    Box(Alignment.Center, Modifier.fillMaxSize()) {
+                    Box(Modifier.fillMaxSize().padding(8.dp), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
                             Icon(Icons.Default.Warning, null, tint = Color(0xFFFF9800), modifier = Modifier.size(40.dp))
                             Spacer(Modifier.height(8.dp)); Text("需要摄像头权限", color = Color(0xFFE65100))
@@ -164,7 +166,7 @@ fun BarcodeScannerApp(
 @Composable
 fun ResultContent(results: List<ScanRecord>, onSelect: (ScanRecord) -> Unit) {
     if (results.isEmpty()) {
-        Box(Modifier.fillMaxSize(), Alignment.Center) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text("🔍", fontSize = 40.sp); Spacer(Modifier.height(8.dp))
                 Text("暂无扫码结果", color = TextSecondary, fontSize = 14.sp)
@@ -181,7 +183,7 @@ fun ResultContent(results: List<ScanRecord>, onSelect: (ScanRecord) -> Unit) {
 @Composable
 fun HistoryContent(records: List<ScanRecord>, onSelect: (ScanRecord) -> Unit, onDelete: (ScanRecord) -> Unit, onClearAll: () -> Unit) {
     if (records.isEmpty()) {
-        Box(Modifier.fillMaxSize(), Alignment.Center) { Text("暂无历史记录", color = TextSecondary, fontSize = 14.sp) }
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) { Text("暂无历史记录", color = TextSecondary, fontSize = 14.sp) }
     } else {
         Column {
             Row(Modifier.fillMaxWidth().padding(horizontal = 12.dp, vertical = 4.dp), horizontalArrangement = Arrangement.End) {
