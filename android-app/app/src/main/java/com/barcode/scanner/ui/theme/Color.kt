@@ -1,4 +1,4 @@
-﻿package com.barcode.scanner.ui
+﻿package com.barcode.scanner.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
