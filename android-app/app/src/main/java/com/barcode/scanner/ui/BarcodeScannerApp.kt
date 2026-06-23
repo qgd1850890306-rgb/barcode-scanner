@@ -42,7 +42,7 @@ fun BarcodeScannerApp(
     onShare: (String) -> Unit
 ) {
     val context = LocalContext.current
-    val lifecycleOwner = androidx.lifecycle.ViewTreeLifecycleOwner.get(context)!!
+    val lifecycleOwner = context as androidx.activity.ComponentActivity
     val scanResults by viewModel.scanResults.collectAsState()
     val historyRecords by viewModel.historyRecords.collectAsState()
     val isScanning by viewModel.isScanning.collectAsState()
