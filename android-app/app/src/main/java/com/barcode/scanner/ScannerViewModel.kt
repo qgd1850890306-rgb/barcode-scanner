@@ -127,8 +127,12 @@ class ScannerViewModel(application: Application) : AndroidViewModel(application)
                 if (bitmap != null) {
                     val inputImage = InputImage.fromBitmap(bitmap, 0)
                     val results = withContext(Dispatchers.IO) { barcodeScanner?.process(inputImage)?.await() }
-                    results?.forEach { b ->
-                        b.rawValue?.let { addResult(it, formatName(b.format)) }
+                    if (results != null) {
+                        for (barcode in results) {
+                            val rawValue = barcode.rawValue ?: continue
+                            val format = formatName(barcode.format)
+                            addResult(rawValue, format)
+                        }
                     }
                     if (results.isNullOrEmpty()) statusFormat.value = "未识别到条码"
                 }
